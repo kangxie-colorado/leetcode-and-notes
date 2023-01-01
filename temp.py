@@ -2,6 +2,8 @@ from collections import Counter, defaultdict
 from functools import cmp_to_key
 from typing import List
 
+from sortedcontainers import SortedList
+
 
 def twoSum(nums, target):
     i, j = 0, len(nums)-1
@@ -128,6 +130,22 @@ class Solution:
         return True
 
 
+class CacheNode:
+    def __init__(self, freq=1, val=0, seq=0) -> None:
+        self.freq = freq
+        self.val = val
+        self.seq = seq
+
+    def __lt__(self, other):
+        return self.freq < other.freq or (self.freq == other.freq and self.seq < other.seq)
+
+    def __eq__(self, other):
+        return self.freq == other.freq and self.val == other.val and self.seq == other.seq
+
+    def __repr__(self):
+        return f"CacheNode(freq:{self.freq}, val:{self.val}, seq:{self.seq})"
+
+
 if __name__ == '__main__':
     """
     myobj = MyCalss(5)
@@ -137,3 +155,8 @@ if __name__ == '__main__':
     print(s.isToeplitzMatrix([[11, 74, 0, 93], [40, 11, 74, 7]]))
     """
     ...
+    cn1 = CacheNode(1,1,1)
+    cn2 = CacheNode(2, 2, 2)
+    cn3 = CacheNode(3,3,3)
+    cnSL = SortedList([cn1,cn2,cn3])
+    
