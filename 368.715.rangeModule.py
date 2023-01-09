@@ -8,6 +8,7 @@ okay.. have an idea of segment tree
 """
 
 
+import bisect
 from functools import cache
 
 
@@ -261,6 +262,325 @@ it worked... quite challendging
 rest and see other solution
 """
 
+def overlap(s1, e1, s2, e2):
+    return not (s2 >= e1 or s1 >= e2)
+
+
+
+class RangeModule:
+
+    def __init__(self):
+        self.ranges = []
+        
+
+    def addRange(self, left: int, right: int) -> None:
+        newRanges = []
+        for i,(s,e) in enumerate(self.ranges):
+            if right < s:
+                newRanges.append([left, right])
+                newRanges.extend(self.ranges[i:])
+                self.ranges = newRanges
+                return 
+            elif e<left:
+                newRanges.append([s,e])
+            else:
+                left, right = min(left, s), max(e, right)
+
+        newRanges.append([left, right])
+        self.ranges = newRanges
+
+    
+    def removeRange(self, left: int, right: int) -> None:
+        newRanges = []
+        for i,(s,e) in enumerate(self.ranges):
+            if right<=s:
+                newRanges.extend(self.ranges[i:])
+                break
+            elif e<=left:
+                newRanges.append([s,e])
+            else:
+                if s <= left and right <= e:
+                    if left > s:
+                        newRanges.append([s, left])
+                    if e > right:
+                        newRanges.append([right, e])
+                    newRanges.extend(self.ranges[i+1:])
+                    break
+                elif left <= s and e <= right:
+                    ...
+                elif left <= s < right <= e:
+                    if e > right:
+                        newRanges.append([right, e])
+                    newRanges.extend(self.ranges[i+1:])
+                    break
+                else:
+                    if left>s:
+                        newRanges.append([s,left])
+        self.ranges = newRanges
+
+
+    def queryRange(self, left: int, right: int) -> bool:
+        for i,(s,e) in enumerate(self.ranges):
+            if s<=left and right<=e:
+                return True
+        return False 
+        
+
+"""
+34 / 54 test cases passed.
+failed at 
+
+["RangeModule","addRange","addRange","removeRange","queryRange","queryRange","removeRange","removeRange","removeRange","removeRange","removeRange","queryRange","removeRange","addRange","removeRange","addRange","queryRange","queryRange","addRange","addRange","queryRange","removeRange","queryRange","addRange","queryRange","removeRange","removeRange","addRange","addRange","removeRange","removeRange","removeRange","addRange","addRange","queryRange","queryRange","queryRange","queryRange","queryRange","removeRange","removeRange","queryRange","addRange","addRange","addRange","queryRange","addRange","addRange","removeRange","addRange","queryRange","removeRange","addRange","queryRange","addRange","addRange","addRange","queryRange","addRange","queryRange","removeRange","removeRange","removeRange","removeRange","queryRange","removeRange","queryRange","queryRange","removeRange","queryRange","addRange","addRange","queryRange","removeRange","removeRange","queryRange","addRange","removeRange","removeRange","addRange","addRange","addRange","queryRange","queryRange","addRange","queryRange","removeRange","queryRange","removeRange","addRange","queryRange"]
+[[],[55,62],[1,29],[18,49],[6,98],[59,71],[40,45],[4,58],[57,69],[20,30],[1,40],[73,93],[32,93],[38,100],[50,64],[26,72],[8,74],[15,53],[44,85],[10,71],[54,70],[10,45],[30,66],[47,98],[1,7],[44,78],[31,49],[62,63],[49,88],[47,72],[8,50],[49,79],[31,47],[54,87],[77,78],[59,100],[8,9],[50,51],[67,93],[25,86],[8,92],[31,87],[90,95],[28,56],[10,42],[27,34],[75,81],[17,63],[78,90],[9,18],[51,74],[20,54],[35,72],[2,29],[28,41],[17,95],[73,75],[34,43],[57,96],[51,72],[21,67],[40,73],[14,26],[71,86],[34,41],[10,25],[27,68],[18,32],[30,31],[45,61],[64,66],[18,93],[13,21],[13,46],[56,99],[6,93],[25,36],[27,88],[82,83],[30,71],[31,73],[10,41],[71,72],[9,56],[22,76],[38,74],[2,77],[33,61],[74,75],[11,43],[27,75]]
+
+okay.. this is too hard to debug
+
+okay.. actually I debugged it.. was a double variable caused conflict 
+left,right vs tempRange.. I changed one place and didn't change another 
+
+Runtime: 1159 ms, faster than 38.28% of Python3 online submissions for Range Module.
+Memory Usage: 18.7 MB, less than 60.82% of Python3 online submissions for Range Module.
+
+if I use binary search?
+
+"""
+
+
+class RangeModule:
+
+    def __init__(self):
+        self.ranges = []
+
+    def addRange(self, left: int, right: int) -> None:
+        newRanges = []
+        for i, (s, e) in enumerate(self.ranges):
+            if right < s:
+                newRanges.append([left, right])
+                newRanges.extend(self.ranges[i:])
+                self.ranges = newRanges
+                return
+            elif e < left:
+                newRanges.append([s, e])
+            else:
+                left, right = min(left, s), max(e, right)
+
+        newRanges.append([left, right])
+        self.ranges = newRanges
+
+    def removeRange(self, left: int, right: int) -> None:
+        newRanges = []
+        for i, (s, e) in enumerate(self.ranges):
+            if right <= s:
+                newRanges.extend(self.ranges[i:])
+                break
+            elif e <= left:
+                newRanges.append([s, e])
+            else:
+                if s <= left and right <= e:
+                    if left > s:
+                        newRanges.append([s, left])
+                    if e > right:
+                        newRanges.append([right, e])
+                    newRanges.extend(self.ranges[i+1:])
+                    break
+                elif left <= s and e <= right:
+                    ...
+                elif left <= s < right <= e:
+                    if e > right:
+                        newRanges.append([right, e])
+                    newRanges.extend(self.ranges[i+1:])
+                    break
+                else:
+                    if left > s:
+                        newRanges.append([s, left])
+        self.ranges = newRanges
+
+    def queryRange(self, left: int, right: int) -> bool:
+        idx = bisect.bisect_left(self.ranges, [left, right])
+        s=e=s1=e1=0
+        if idx < len(self.ranges):
+            s,e = self.ranges[idx]
+        if idx:
+            s1,e1 = self.ranges[idx-1]
+        return s1<=left and right<=e1 or (s<=left and right<=e)
+
+"""
+Runtime: 872 ms, faster than 59.93% of Python3 online submissions for Range Module.
+Memory Usage: 18.7 MB, less than 30.41% of Python3 online submissions for Range Module.
+"""
+
+"""
+this is a genius idea 
+
+https://leetcode.com/problems/range-module/discuss/244194/Python-solution-using-bisect_left-bisect_right-with-explanation
+
+>>> a
+[1, 3, 5, 6, 7, 11]
+incoming range [4:8)
+>>> a=[1, 3, 5, 6, 7, 11]
+>>> bisect.bisect_left(a,4)
+2
+>>> bisect.bisect_right(a,8)
+5
+
+bisect 4 is even, so it is outside of any ranges.. in a (3 ranges are in a right now)
+
+        subtrack = []
+        if start % 2 == 0:
+            subtrack.append(left)
+        if end % 2 == 0:
+            subtrack.append(right)
+
+threfore it enters the subtrack
+bisect 8 is 5.. so it is inside some range (7-11).. therefore it doesn't end a new range
+
+one out of range, out inside a range, it means a merge 
+
+and 
+        self.track[start:end] = subtrack
+
+>>> a[2:5] = [4]
+>>> a
+[1, 3, 4, 11]
+
+another example
+>>> a=[1, 3, 5, 6, 7, 11]
+>>> left=2
+>>> right=4
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(1, 2)
+
+so left is inside a range.. meaning merge
+right is out of a range.. it will end a new range
+a[1:2] = [4]
+>>> a[r_s:r_e]=[4]
+>>> a
+[1, 4, 5, 6, 7, 11]
+
+so 1-3 and 2-4 merge to 1-4
+
+a as below and incoming range is 4 5
+>>> a
+[1, 4, 5, 6, 7, 11]
+>>> left=4
+>>> right=5
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(1, 3)
+
+it doesn't need to merge 
+even you merge 
+>>> a[r_s:r_e]=[4,5]
+>>> a
+[1, 4, 5, 6, 7, 11]
+interesting.. but it is still ok
+
+>>> left=2
+>>> right=3
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(1, 1)
+both inside a range. no need to merge 
+
+>>> left=0
+>>> right=12
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(0, 6)
+>>> a[r_s:r_e]=[0,12]
+>>> a
+[0, 12]
+a big merge...
+
+cont from [0,12]
+>>> left=6
+>>> right=13
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(1, 2)
+>>> a[r_s:r_e]=[13]
+>>> a
+[0, 13]
+
+merge to right
+>>> left=-3
+>>> right=10
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(0, 1)
+>>> a[r_s:r_e]=[-3]
+>>> a
+[-3, 13]
+
+merge to left...
+
+this is cool..
+
+then the removeRange works in the opposite way
+>>> a
+[-3, 13]
+>>> left=2
+>>> right=4
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(1, 1)
+
+odd, both should create new ranges.. 
+>>> a[r_s:r_e]=[2,4] <== this is basically inserting a list inside a list... cool
+>>> a
+[-3, 2, 4, 13]
+
+
+>>> left=6
+>>> right=15
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(3, 4)
+>>> a[r_s:r_e]=[6]
+>>> a
+[-3, 2, 4, 6]
+
+remove right 
+
+>>> a
+[-3, 2, 4, 6]
+>>> left=-5
+>>> right=10
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(0, 4)
+>>> a[r_s:r_e]=[]
+>>> a
+[]
+
+aha.. this is removing everything 
+>>> a=[-3, 2, 4, 6]
+>>> left=1
+>>> right=5
+>>> r_s=bisect.bisect_left(a,left)
+>>> r_e=bisect.bisect_right(a,right)
+>>> r_s, r_e
+(1, 3)
+>>> a[r_s:r_e]=[1,5]
+>>> a
+[-3, 1, 5, 6]
+
+what can I say?
+this is super genius... 
+
+
+"""
+
 if __name__ == '__main__':
     calls = ["RangeModule","addRange","removeRange","queryRange","queryRange","queryRange"]
     args = [[],[10,20],[14,16],[10,14],[13,15],[16,17]]
@@ -279,6 +599,18 @@ if __name__ == '__main__':
 
     calls = ["RangeModule","addRange","queryRange","removeRange","removeRange","addRange","queryRange","addRange","queryRange","removeRange"]
     args = [[],[5,8],[3,4],[5,6],[3,6],[1,3],[2,3],[4,8],[2,3],[4,9]]
+
+
+    calls = ["RangeModule", "addRange", "removeRange", "removeRange", "addRange",
+             "removeRange", "addRange", "queryRange", "queryRange", "queryRange"]
+    args = [[], [6, 8], [7, 8], [8, 9], [8, 9], [1, 3], [1, 8], [2, 4], [2, 9], [4, 6]]
+
+    calls = ["RangeModule","addRange","addRange","queryRange","removeRange","queryRange","removeRange","addRange","queryRange","removeRange"]
+    args = [[],[5,6],[2,8],[1,4],[2,4],[4,5],[4,6],[5,9],[5,6],[6,7]]
+
+    calls = ["RangeModule","addRange","addRange","removeRange","queryRange","queryRange","removeRange","removeRange","removeRange","removeRange","removeRange","queryRange","removeRange","addRange","removeRange","addRange","queryRange","queryRange","addRange","addRange","queryRange","removeRange","queryRange","addRange","queryRange","removeRange","removeRange","addRange","addRange","removeRange","removeRange","removeRange","addRange","addRange","queryRange","queryRange","queryRange","queryRange","queryRange","removeRange","removeRange","queryRange","addRange","addRange","addRange","queryRange","addRange","addRange","removeRange","addRange","queryRange","removeRange","addRange","queryRange","addRange","addRange","addRange","queryRange","addRange","queryRange","removeRange","removeRange","removeRange","removeRange","queryRange","removeRange","queryRange","queryRange","removeRange","queryRange","addRange","addRange","queryRange","removeRange","removeRange","queryRange","addRange","removeRange","removeRange","addRange","addRange","addRange","queryRange","queryRange","addRange","queryRange","removeRange","queryRange","removeRange","addRange","queryRange"]
+    args = [[],[55,62],[1,29],[18,49],[6,98],[59,71],[40,45],[4,58],[57,69],[20,30],[1,40],[73,93],[32,93],[38,100],[50,64],[26,72],[8,74],[15,53],[44,85],[10,71],[54,70],[10,45],[30,66],[47,98],[1,7],[44,78],[31,49],[62,63],[49,88],[47,72],[8,50],[49,79],[31,47],[54,87],[77,78],[59,100],[8,9],[50,51],[67,93],[25,86],[8,92],[31,87],[90,95],[28,56],[10,42],[27,34],[75,81],[17,63],[78,90],[9,18],[51,74],[20,54],[35,72],[2,29],[28,41],[17,95],[73,75],[34,43],[57,96],[51,72],[21,67],[40,73],[14,26],[71,86],[34,41],[10,25],[27,68],[18,32],[30,31],[45,61],[64,66],[18,93],[13,21],[13,46],[56,99],[6,93],[25,36],[27,88],[82,83],[30,71],[31,73],[10,41],[71,72],[9,56],[22,76],[38,74],[2,77],[33,61],[74,75],[11,43],[27,75]]
+    
     for call, arg in zip(calls, args):
         print(f"{call}({arg})")
         if call == 'RangeModule':
@@ -290,4 +622,5 @@ if __name__ == '__main__':
         else:
             print(rm.queryRange(*arg))
         
+        print(f"ranges: {rm.ranges}")
         print()
