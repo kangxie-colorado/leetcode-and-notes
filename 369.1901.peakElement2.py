@@ -21,6 +21,7 @@ review the 1D problem first
 """
 
 
+from functools import cache
 from typing import List
 
 
@@ -143,4 +144,64 @@ class Solution:
 Runtime: 1653 ms, faster than 59.39% of Python3 online submissions for Find a Peak Element II.
 Memory Usage: 45.3 MB, less than 78.17% of Python3 online submissions for Find a Peak Element II.
 
+"""
+
+
+class Solution:
+    def findPeakGrid(self, mat: List[List[int]]) -> List[int]:
+
+        minRow, maxRow = 0, len(mat)-1
+
+        while minRow < maxRow:
+
+            midRow = minRow + (maxRow-minRow)//2
+
+            if midRow + 1 < len(mat) and max(mat[midRow]) < max(mat[midRow+1]):
+                minRow = midRow + 1
+            else:
+                maxRow = midRow
+
+        maxVal = max(mat[minRow])
+        return [minRow, mat[minRow].index(maxVal)]
+
+
+"""
+Runtime: 1196 ms, faster than 91.17% of Python3 online submissions for Find a Peak Element II.
+Memory Usage: 45.5 MB, less than 16.00% of Python3 online submissions for Find a Peak Element II.
+
+notice this takes advantage of the natural converging property of binary search
+when the only if-test fails.. it keep midRow as candidate and exclude the [midRow+1:maxRow] part...
+
+it will always find the max element... there can be more than one peak element.. but only a max element..
+
+anyway.. it works..
+perhaps I can even use some cache
+
+"""
+
+
+class Solution:
+    def findPeakGrid(self, mat: List[List[int]]) -> List[int]:
+        @cache
+        def maxOfRow(row):
+            return max(mat[row])
+
+        minRow, maxRow = 0, len(mat)-1
+
+        while minRow < maxRow:
+
+            midRow = minRow + (maxRow-minRow)//2
+
+            if midRow + 1 < len(mat) and maxOfRow(midRow) < maxOfRow(midRow+1):
+                minRow = midRow + 1
+            else:
+                maxRow = midRow
+
+        maxVal = maxOfRow(minRow)
+        return [minRow, mat[minRow].index(maxVal)]
+
+"""
+well...
+Runtime: 1249 ms, faster than 70.83% of Python3 online submissions for Find a Peak Element II.
+Memory Usage: 45.3 MB, less than 97.17% of Python3 online submissions for Find a Peak Element II.
 """

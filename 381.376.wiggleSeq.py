@@ -295,6 +295,44 @@ ending at idx means:
     including idx   <- this is what I was trying to model...
 """
 
+
+class Solution:
+    def wiggleMaxLength(self, nums: List[int]) -> int:
+
+        for i, num in enumerate(nums):
+            if i == 0:
+                upSeq = downSeq = 1
+                continue
+            prev = nums[i-1]
+
+            if num > prev:
+                upSeq = downSeq + 1
+            elif num < prev:
+                downSeq = upSeq + 1
+
+        return max(upSeq, downSeq)
+"""
+so okay... after understanding this problem 
+two rows can be represented by two variables
+
+and it is up to this point.. vs it is not ending at this point..
+
+Runtime: 39 ms, faster than 78.43% of Python3 online submissions for Wiggle Subsequence.
+Memory Usage: 13.9 MB, less than 77.70% of Python3 online submissions for Wiggle Subsequence.
+
+
+okay after doing 1746.maxSubArraySum.. 
+including vs up to...
+
+okay here:
+    - turning direction is "including nums[i]", 1 _/ 3 \_ 2, 2 is included 
+    - same direction is 'up to', it can include but won't change the lenght, 
+        1 _/ 2 _/ 3 - at 3, it can include or not... up to
+        3 \_ 2 |_ 1 - at 1.. same story..
+
+somewhere ... 
+"""
+
 if __name__ == '__main__':
     
 
