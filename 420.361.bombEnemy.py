@@ -47,9 +47,9 @@ class Solution:
 
                 k = m-1-i
                 if grid[k][j] == '0':
-                    down[k][j] = down[k+1][j] if k < n-1 else 0
+                    down[k][j] = down[k+1][j] if k < m-1 else 0
                 if grid[k][j] == 'E':
-                    down[k][j] = down[k+1][j]+1 if k < n-1 else 1
+                    down[k][j] = down[k+1][j]+1 if k < m-1 else 1
                 if grid[k][j] == 'W':
                     down[k][j] = 0
         

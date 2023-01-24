@@ -22,3 +22,11 @@ class Solution:
             res = f(x-1,y,movesLeft-1) + f(x+1,y,movesLeft-1) + f(x,y-1,movesLeft-1) + f(x,y+1,movesLeft-1)
             return res%mod
         return f(startRow, startColumn, maxMove)
+
+"""
+Runtime: 92 ms, faster than 92.64% of Python3 online submissions for Out of Boundary Paths.
+Memory Usage: 20.2 MB, less than 25.64% of Python3 online submissions for Out of Boundary Paths.
+
+3D dp to bottom up? nah
+
+"""
