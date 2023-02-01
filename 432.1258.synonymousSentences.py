@@ -11,6 +11,7 @@ so just group them together and do the multiply
 
 
 from collections import defaultdict
+import itertools
 from typing import List
 
 
@@ -129,6 +130,43 @@ https://leetcode.com/problems/synonymous-sentences/discuss/430489/python-union-f
 [(1, 2, 3, 6, 9), (1, 2, 3, 7, 9), (1, 2, 4, 6, 9), (1, 2, 4, 7, 9), (1, 2, 5, 6, 9), (1, 2, 5, 7, 9)]
 """
 
+
+class Solution:
+    def generateSentences(self, synonyms: List[List[str]], text: str) -> List[str]:
+
+        # let me try using map instead of array
+        roots = {}
+
+        def find(w):
+            roots.setdefault(w,w)
+            if roots[w] != w:
+                roots[w] = find(roots[w])
+            return roots[w]
+
+        def union(w1, w2):
+            r1, r2 = find(w1), find(w2)
+            roots[r1] = roots[r2]
+
+        for w1, w2 in synonyms:
+            union(w1, w2)
+
+        rootsToChildren = defaultdict(list)
+        for child in roots:
+            root = find(child)
+            rootsToChildren[root].append(child)
+        for root in rootsToChildren:
+            rootsToChildren[root].sort()
+
+        words = text.split()
+        res = []
+        for word in words:
+            root = find(word)
+            if root not in rootsToChildren:
+                res.append([word])
+            else:
+                res.append(rootsToChildren[root])
+
+        return [" ".join(comb) for comb in list(itertools.product(*res))]
 
 
 if __name__ == '__main__':

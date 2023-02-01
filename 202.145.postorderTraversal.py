@@ -112,6 +112,10 @@ Runtime: 39 ms, faster than 75.03% of Python3 online submissions for Binary Tree
 Memory Usage: 13.9 MB, less than 60.12% of Python3 online submissions for Binary Tree Postorder Traversal.
 
 of course I can pre-pend.. but no big diff
+
+intersting.. post-order is the reverse of pre-order's variant
+root-left-right pre-order
+left-right-root post-order; can be reverse(root-right-left, which can be implement as variant of pre-order)
 """
 
 if __name__ == '__main__':
