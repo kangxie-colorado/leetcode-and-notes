@@ -299,6 +299,7 @@ class Solution(object):
                         q.append((m2, c2, t2))
         return color[1, 2, 1]
 
+
 """
 Runtime: 1178 ms, faster than 19.51% of Python3 online submissions for Cat and Mouse.
 Memory Usage: 14.7 MB, less than 79.27% of Python3 online submissions for Cat and Mouse.
