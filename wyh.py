@@ -30,3 +30,4 @@ while True:
             #终止程序，确保退出程序
             sys.exit()
     pygame.display.flip()  # 更新屏幕内容
+
